@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>租金評定系統 v9.0 終極版</title>
+    <title>租金評定系統 鎮信桃園/安東南投/安東彰化</title>
     <style>
         :root { --primary: #2c3e50; --bg: #f2f5f8; --accent: #3498db; --success: #27ae60; --danger: #e74c3c; --warning: #f39c12; }
         body { font-family: -apple-system, "Microsoft JhengHei", sans-serif; background-color: var(--bg); margin: 0; padding: 10px; color: #333; }
@@ -65,7 +65,7 @@
 
             <label>案件類型</label>
             <select id="caseType" onchange="calculate()">
-                <option value="整層">整層 (一般住宅)</option>
+                <option value="整層">整層</option>
                 <option value="套房">套房</option>
             </select>
         </div>
@@ -83,17 +83,17 @@
                 <div>
                     <label>區位調整</label>
                     <select id="locAdj" onchange="calculate()">
-                        <option value="0">0% (無)</option>
-                        <option value="3">3% (優)</option>
-                        <option value="5">5% (極佳)</option>
+                        <option value="0">0% (中下-次要生活圈)</option>
+                        <option value="3">3% (中上-主要生活圈)</option>
+                        <option value="5">5% (優質-核心生活圈)</option>
                     </select>
                 </div>
                 <div>
                     <label>裝修調整</label>
                     <select id="renAdj" onchange="calculate()">
-                        <option value="0">0% (無)</option>
-                        <option value="3">3% (中)</option>
-                        <option value="5">5% (精裝)</option>
+                        <option value="0">0% (無裝修-基本居住)</option>
+                        <option value="3">3% (簡易裝修-基本收納)</option>
+                        <option value="5">5% (中等裝修-系統櫃)</option>
                     </select>
                 </div>
             </div>
@@ -236,7 +236,7 @@ function calculate() {
     } else if ((rent/area) <= finalUnitPrice) {
         box.innerText = "符合標準"; box.className = "status-normal";
     } else {
-        box.innerText = "需個案說明 (超過調整後單價)"; box.className = "status-warning";
+        box.innerText = "超過調整後單價"; box.className = "status-warning";
     }
 }
 
@@ -244,3 +244,4 @@ initDistricts();
 </script>
 </body>
 </html>
+

@@ -2,243 +2,207 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>租金評定試算系統 v8.0 專業版</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>租金評定系統 v9.0 終極版</title>
     <style>
-        :root { --primary: #2c3e50; --bg: #f0f4f8; --white: #ffffff; --accent: #3498db; --helper-bg: #fff9db; --date-bg: #e3f2fd; }
-        body { font-family: "Microsoft JhengHei", sans-serif; background-color: var(--bg); padding: 20px; color: #333; }
-        .container { max-width: 1000px; margin: auto; background: var(--white); padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        h2 { text-align: center; color: var(--primary); margin-bottom: 25px; border-bottom: 2px solid var(--accent); padding-bottom: 10px; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-        @media (max-width: 800px) { .grid { grid-template-columns: 1fr; } }
+        :root { --primary: #2c3e50; --bg: #f2f5f8; --accent: #3498db; --success: #27ae60; --danger: #e74c3c; --warning: #f39c12; }
+        body { font-family: -apple-system, "Microsoft JhengHei", sans-serif; background-color: var(--bg); margin: 0; padding: 10px; color: #333; }
+        .container { max-width: 500px; margin: auto; background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); overflow: hidden; }
+        .header { background: var(--primary); color: white; padding: 18px; text-align: center; font-size: 1.25rem; font-weight: bold; letter-spacing: 1px; }
+        .content { padding: 20px; }
         
-        .card { padding: 20px; border-radius: 8px; border: 1px solid #dee2e6; background-color: #fff; }
-        .input-group { background-color: #f8fbff; }
-        
-        .helper-box { padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid transparent; }
-        .area-helper { background-color: var(--helper-bg); border-color: #f5e79e; }
-        .date-helper { background-color: var(--date-bg); border-color: #bbdefb; }
-        
-        label { display: block; margin-bottom: 8px; font-weight: bold; font-size: 0.95rem; }
-        select, input { width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid #ced4da; border-radius: 6px; box-sizing: border-box; font-size: 1rem; }
-        
-        .result-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px dashed #eee; }
-        .result-label { color: #666; }
-        .result-value { font-weight: bold; color: var(--primary); font-size: 1.1rem; }
+        .section { margin-bottom: 20px; padding: 15px; background: #fdfdfd; border-radius: 12px; border: 1px solid #edf2f7; }
+        .section-title { font-size: 0.95rem; color: var(--accent); font-weight: 800; margin-bottom: 12px; display: flex; align-items: center; }
+        .section-title::before { content: ""; width: 4px; height: 16px; background: var(--accent); margin-right: 8px; border-radius: 2px; }
 
-        #statusBox { text-align: center; padding: 20px; border-radius: 8px; font-weight: bold; margin-top: 25px; font-size: 1.25rem; }
-        .status-init { background-color: #e9ecef; color: #495057; }
-        .status-normal { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .status-warning { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
-        .status-danger { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        label { display: block; margin-bottom: 6px; font-size: 0.9rem; font-weight: bold; color: #4a5568; }
+        select, input { 
+            width: 100%; height: 50px; padding: 0 12px; margin-bottom: 15px; 
+            border: 2px solid #e2e8f0; border-radius: 10px; font-size: 1rem; 
+            box-sizing: border-box; background-color: white; transition: border-color 0.2s;
+        }
+        select:focus, input:focus { border-color: var(--accent); outline: none; }
 
-        .btn-reset { width: 100%; padding: 10px; background-color: #6c757d; color: white; border: none; border-radius: 6px; cursor: pointer; margin-top: 10px; }
-        .unit { font-size: 0.8rem; margin-left: 5px; color: #888; }
-        .example-text { color: #0d47a1; font-weight: bold; font-size: 0.85rem; }
+        .flex-group { display: flex; gap: 12px; }
+        .flex-group > div { flex: 1; }
+
+        /* 結果顯示區 */
+        .result-box { background: #f0f7ff; border: 2px solid #bee3f8; border-radius: 12px; padding: 18px; margin-top: 10px; }
+        .res-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .res-label { color: #4a5568; font-size: 0.9rem; }
+        .res-val { font-weight: 700; font-size: 1.1rem; color: var(--primary); }
+        .res-max-label { font-size: 1rem; font-weight: 800; color: #2d3748; }
+        .res-max-val { font-size: 1.8rem; font-weight: 900; color: var(--danger); }
+
+        /* 狀態提示 */
+        #statusBox { text-align: center; padding: 18px; border-radius: 10px; font-weight: 800; margin-top: 20px; font-size: 1.15rem; transition: all 0.3s; }
+        .status-init { background: #edf2f7; color: #718096; }
+        .status-normal { background: #c6f6d5; color: #22543d; border: 1px solid #9ae6b4; }
+        .status-warning { background: #feebc8; color: #744210; border: 1px solid #fbd38d; }
+        .status-danger { background: #fed7d7; color: #822727; border: 1px solid #feb2b2; }
+
+        .btn-reset { width: 100%; height: 50px; background: #a0aec0; color: white; border: none; border-radius: 10px; margin-top: 15px; font-size: 1rem; font-weight: bold; cursor: pointer; }
+        .helper-text { font-size: 0.8rem; color: var(--accent); margin-top: -12px; margin-bottom: 12px; display: block; font-weight: 500; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>租金評定試算系統 (中彰投全區版)</h2>
+    <div class="header">租金評定試算系統 v9.0</div>
     
-    <div class="grid">
-        <div class="card input-group">
-            <label>1. 選擇縣市</label>
+    <div class="content">
+        <div class="section">
+            <div class="section-title">物件位置與類型</div>
+            <label>選擇縣市</label>
             <select id="city" onchange="initDistricts()">
                 <option value="桃園市">桃園市</option>
                 <option value="彰化縣">彰化縣</option>
                 <option value="南投縣">南投縣</option>
             </select>
 
-            <label>2. 選擇鄉鎮市區</label>
+            <label>選擇行政區</label>
             <select id="district" onchange="calculate()"></select>
 
-            <label>3. 案件類型</label>
+            <label>案件類型</label>
             <select id="caseType" onchange="calculate()">
                 <option value="整層">整層 (一般住宅)</option>
                 <option value="套房">套房</option>
             </select>
+        </div>
 
-            <div class="helper-box area-helper">
-                <label>面積換算助手 (依謄本紅字輸入)</label>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                    <input type="number" id="h_main" placeholder="主建物" oninput="calcAreaHelper()">
-                    <input type="number" id="h_sub" placeholder="附屬" oninput="calcAreaHelper()">
-                    <input type="number" id="h_common1" placeholder="共有1" oninput="calcAreaHelper()">
-                    <input type="number" id="h_common2" placeholder="共有2" oninput="calcAreaHelper()">
-                </div>
-                <div style="text-align: right; font-size: 0.9rem;">結果：<b id="helperResult">0</b> 坪</div>
-            </div>
+        <div class="section">
+            <div class="section-title">規格與加成</div>
+            <label>建築完成日期 (自動換算屋齡)</label>
+            <input type="text" id="buildDate" placeholder="例如：0831201" inputmode="numeric" oninput="calcAgeByDate()">
+            <span class="helper-text">輸入 7 位民國日期，若手動輸入屋齡請見下方</span>
+            
+            <label>屋齡 (年)</label>
+            <input type="number" id="age" value="0" inputmode="numeric" oninput="calculate()">
 
-            <div class="helper-box date-helper">
-                <label>屋齡與建築日期設定</label>
-                <select id="ageMode" onchange="toggleAgeInput()">
-                    <option value="manual">手動輸入屋齡 (年)</option>
-                    <option value="date">按建築完成日期計算</option>
-                </select>
-                <div id="manualAgeGroup">
-                    <input type="number" id="age" value="0" oninput="calculate()">
-                </div>
-                <div id="dateAgeGroup" style="display:none;">
-                    <label>建築完成日期 <span class="example-text">範例：0831201</span></label>
-                    <input type="text" id="buildDate" placeholder="輸入 7 位日期數字" oninput="calcAgeByDate()">
-                </div>
-            </div>
-
-            <div style="display:flex; gap:10px;">
-                <div style="flex:1;">
+            <div class="flex-group">
+                <div>
                     <label>區位調整</label>
                     <select id="locAdj" onchange="calculate()">
-                        <option value="0">無調整 (0%)</option>
-                        <option value="3">優良 (3%)</option>
-                        <option value="5">極佳 (5%)</option>
+                        <option value="0">0% (無)</option>
+                        <option value="3">3% (優)</option>
+                        <option value="5">5% (極佳)</option>
                     </select>
                 </div>
-                <div style="flex:1;">
+                <div>
                     <label>裝修調整</label>
                     <select id="renAdj" onchange="calculate()">
-                        <option value="0">無調整 (0%)</option>
-                        <option value="3">中等 (3%)</option>
-                        <option value="5">精裝 (5%)</option>
+                        <option value="0">0% (無)</option>
+                        <option value="3">3% (中)</option>
+                        <option value="5">5% (精裝)</option>
                     </select>
                 </div>
             </div>
-
-            <label>最終計算坪數 (坪)</label>
-            <input type="number" id="area" value="0" min="0" step="0.01" oninput="calculate()">
-
-            <label>簽約租金 (月/元)</label>
-            <input type="number" id="rent" placeholder="輸入合約上的租金" oninput="calculate()">
         </div>
 
-        <div class="card">
-            <div class="result-row">
-                <span class="result-label">基準單價 (依屋齡級距)</span>
-                <span class="result-value"><span id="resRef">0</span><span class="unit">元/坪</span></span>
-            </div>
-            <div class="result-row">
-                <span class="result-label">調整後單價 (含區位裝修)</span>
-                <span class="result-value" style="color: #2980b9;"><span id="resAdj">0</span><span class="unit">元/坪</span></span>
-            </div>
-            <div class="result-row">
-                <span class="result-label" style="font-weight: bold; color: #d35400;">核定租金總額上限</span>
-                <span class="result-value" style="color: #d35400; font-size: 1.4rem;"><span id="resMax">0</span><span class="unit">元</span></span>
-            </div>
+        <div class="section">
+            <div class="section-title">金額與坪數</div>
+            <label>計算坪數 (坪)</label>
+            <input type="number" id="area" placeholder="請輸入坪數" inputmode="decimal" oninput="calculate()">
             
-            <div id="statusBox" class="status-init">請輸入完整資料</div>
-            <button class="btn-reset" onclick="location.reload()">重新填寫</button>
+            <label>簽約租金 (月/元)</label>
+            <input type="number" id="rent" placeholder="輸入合約月租金" inputmode="numeric" oninput="calculate()">
+        </div>
 
-            <div style="margin-top: 25px; padding: 15px; background: #f8f9fa; border-radius: 6px; font-size: 0.85rem; color: #666; line-height: 1.6;">
-                <strong>填寫提醒：</strong><br>
-                1. <strong>建築完成日期</strong>：請填寫 7 位數字。若為 83 年 12 月 1 日，請填 0831201。<br>
-                2. <strong>各縣市總額上限</strong>：桃園(3.5萬/2.1萬)、彰投(2.2萬/1.3萬)。系統會自動判斷。
+        <div class="result-box">
+            <div class="res-row">
+                <span class="res-label">基準單價</span>
+                <span class="res-val" id="resRef">0</span>
+            </div>
+            <div class="res-row">
+                <span class="res-label">調整後單價</span>
+                <span class="res-val" id="resAdj" style="color:var(--accent);">0</span>
+            </div>
+            <div class="res-row" style="margin-top:10px; border-top:1px dashed #cbd5e0; padding-top:10px;">
+                <span class="res-max-label">核定租金上限</span>
+                <span class="res-max-val" id="resMax">0</span>
             </div>
         </div>
+
+        <div id="statusBox" class="status-init">請輸入坪數與租金</div>
+        <button class="btn-reset" onclick="location.reload()">重新計算</button>
     </div>
 </div>
 
 <script>
+// 完整數據庫
 const masterData = {
     "桃園市": {
-        "桃園區": { "整層": [780, 770, 755, 735, 720, 700, 680, 650, 620], "套房": [1120, 1100, 1080, 1055, 1025, 1000, 970, 930, 885] },
-        "中壢區": { "整層": [770, 760, 745, 725, 705, 685, 670, 640, 610], "套房": [1080, 1065, 1045, 1020, 995, 965, 940, 900, 855] },
-        "龜山區": { "整層": [855, 840, 825, 805, 785, 760, 740, 710, 675], "套房": [1225, 1205, 1185, 1155, 1125, 1095, 1065, 1020, 970] },
-        "蘆竹區": { "整層": [745, 735, 720, 705, 685, 665, 645, 620, 590], "套房": [1180, 1160, 1140, 1110, 1080, 1050, 1020, 980, 935] },
-        "八德區": { "整層": [735, 720, 710, 690, 675, 655, 635, 610, 580], "套房": [1045, 1030, 1010, 985, 960, 935, 905, 870, 830] },
-        "平鎮區": { "整層": [720, 710, 700, 680, 660, 645, 625, 600, 570], "套房": [900, 885, 870, 850, 830, 805, 780, 750, 715] },
-        "大園區": { "整層": [735, 720, 710, 690, 675, 655, 635, 610, 580], "套房": [1045, 1030, 1010, 985, 960, 935, 905, 870, 830] },
-        "觀音區": { "整層": [700, 685, 675, 660, 640, 625, 605, 580, 555], "套房": [900, 885, 870, 850, 830, 805, 780, 750, 715] },
-        "楊梅區": { "整層": [615, 605, 595, 580, 565, 550, 535, 510, 485], "套房": [830, 815, 805, 780, 760, 740, 720, 690, 660] },
-        "龍潭區": { "整層": [580, 570, 560, 545, 530, 515, 500, 480, 460], "套房": [830, 815, 805, 780, 760, 740, 720, 690, 660] },
-        "大溪區": { "整層": [565, 555, 550, 535, 520, 505, 490, 470, 450], "套房": [710, 700, 685, 670, 650, 635, 615, 590, 565] },
-        "新屋區": { "整層": [580, 570, 560, 545, 530, 515, 500, 480, 460], "套房": [625, 615, 605, 590, 575, 560, 545, 520, 495] },
-        "復興區": { "整層": [375, 370, 360, 355, 345, 335, 325, 310, 295], "套房": [385, 380, 375, 365, 355, 345, 335, 320, 305] }
+        "桃園區": { "整層": [780,770,755,735,720,700,680,650,620], "套房": [1120,1100,1080,1055,1025,1000,970,930,885] },
+        "中壢區": { "整層": [770,760,745,725,705,685,670,640,610], "套房": [1080,1065,1045,1020,995,965,940,900,855] },
+        "龜山區": { "整層": [855,840,825,805,785,760,740,710,675], "套房": [1225,1205,1185,1155,1125,1095,1065,1020,970] },
+        "蘆竹區": { "整層": [745,735,720,705,685,665,645,620,590], "套房": [1180,1160,1140,1110,1080,1050,1020,980,935] },
+        "八德區": { "整層": [735,720,710,690,675,655,635,610,580], "套房": [1045,1030,1010,985,960,935,905,870,830] },
+        "平鎮區": { "整層": [720,710,700,680,660,645,625,600,570], "套房": [900,885,870,850,830,805,780,750,715] },
+        "大園區": { "整層": [735,720,710,690,675,655,635,610,580], "套房": [1045,1030,1010,985,960,935,905,870,830] },
+        "觀音區": { "整層": [700,685,675,660,640,625,605,580,555], "套房": [900,885,870,850,830,805,780,750,715] },
+        "楊梅區": { "整層": [615,605,595,580,565,550,535,510,485], "套房": [830,815,805,780,760,740,720,690,660] },
+        "龍潭區": { "整層": [580,570,560,545,530,515,500,480,460], "套房": [830,815,805,780,760,740,720,690,660] },
+        "大溪區": { "整層": [565,555,550,535,520,505,490,470,450], "套房": [710,700,685,670,650,635,615,590,565] },
+        "新屋區": { "整層": [580,570,560,545,530,515,500,480,460], "套房": [625,615,605,590,575,560,545,520,495] },
+        "復興區": { "整層": [375,370,360,355,345,335,325,310,295], "套房": [385,380,375,365,355,345,335,320,305] }
     },
     "彰化縣": {
-        "彰化市": { "整層": [600, 590, 580, 565, 550, 535, 520, 500, 475], "套房": [745, 735, 720, 705, 685, 665, 645, 620, 590] },
-        "員林市": { "整層": [600, 590, 580, 565, 550, 535, 520, 500, 475], "套房": [675, 665, 650, 635, 620, 600, 585, 560, 535] },
-        "和美鎮": { "整層": [555, 545, 535, 520, 510, 495, 480, 460, 440], "套房": [565, 555, 550, 535, 520, 505, 490, 470, 450] },
-        "鹿港鎮": { "整層": [505, 500, 490, 475, 465, 450, 440, 420, 400], "套房": [565, 555, 550, 535, 520, 505, 490, 470, 450] },
-        "溪湖鎮": { "整層": [400, 390, 385, 375, 365, 355, 345, 330, 315], "套房": [385, 380, 375, 365, 355, 345, 335, 320, 305] },
-        "田中鎮": { "整層": [400, 390, 385, 375, 365, 355, 345, 330, 315], "套房": [385, 380, 375, 365, 355, 345, 335, 320, 305] },
-        "北斗鎮": { "整層": [435, 425, 420, 410, 400, 390, 375, 360, 345], "套房": [385, 380, 375, 365, 355, 345, 335, 320, 305] },
-        "二林鎮": { "整層": [445, 440, 430, 420, 410, 400, 385, 370, 355], "套房": [385, 380, 375, 365, 355, 345, 335, 320, 305] },
-        "線西鄉": { "整層": [445, 440, 430, 420, 410, 400, 385, 370, 355], "套房": [385, 380, 375, 365, 355, 345, 335, 320, 305] },
-        "伸港鄉": { "整層": [435, 425, 420, 410, 400, 390, 375, 360, 345], "套房": [385, 380, 375, 365, 355, 345, 335, 320, 305] },
-        "福興鄉": { "整層": [400, 390, 385, 375, 365, 355, 345, 330, 315], "套房": [385, 380, 375, 365, 355, 345, 335, 320, 305] },
-        "秀水鄉": { "整層": [480, 475, 465, 455, 445, 430, 420, 400, 380], "套房": [385, 380, 375, 365, 355, 345, 335, 320, 305] },
-        "花壇鄉": { "整層": [445, 440, 430, 420, 410, 400, 385, 370, 355], "套房": [385, 380, 375, 365, 355, 345, 335, 320, 305] },
-        "芬園鄉": { "整層": [375, 370, 360, 355, 345, 335, 325, 310, 295], "套房": [385, 380, 375, 365, 355, 345, 335, 320, 305] },
-        "埔鹽鄉": { "整層": [400, 390, 385, 375, 365, 355, 345, 330, 315], "套房": [385, 380, 375, 365, 355, 345, 335, 320, 305] },
-        "埔心鄉": { "整層": [400, 390, 385, 375, 365, 355, 345, 330, 315], "套房": [385, 380, 375, 365, 355, 345, 335, 320, 305] },
-        "永靖鄉": { "整層": [400, 390, 385, 375, 365, 355, 345, 330, 315], "套房": [385, 380, 375, 365, 355, 345, 335, 320, 305] },
-        "社頭鄉": { "整層": [470, 465, 455, 445, 430, 420, 410, 390, 375], "套房": [385, 380, 375, 365, 355, 345, 335, 320, 305] },
-        "二水鄉": { "整層": [375, 370, 360, 355, 345, 335, 325, 310, 295], "套房": [385, 380, 375, 365, 355, 345, 335, 320, 305] },
-        "田尾鄉": { "整層": [400, 390, 385, 375, 365, 355, 345, 330, 315], "套房": [385, 380, 375, 365, 355, 345, 335, 320, 305] },
-        "埤頭鄉": { "整層": [400, 390, 385, 375, 365, 355, 345, 330, 315], "套房": [385, 380, 375, 365, 355, 345, 335, 320, 305] },
-        "芳苑鄉": { "整層": [400, 390, 385, 375, 365, 355, 345, 330, 315], "套房": [385, 380, 375, 365, 355, 345, 335, 320, 305] },
-        "大村鄉": { "整層": [445, 440, 430, 420, 410, 400, 385, 370, 355], "套房": [385, 380, 375, 365, 355, 345, 335, 320, 305] },
-        "竹塘鄉": { "整層": [400, 390, 385, 375, 365, 355, 345, 330, 315], "套房": [385, 380, 375, 365, 355, 345, 335, 320, 305] },
-        "溪州鄉": { "整層": [400, 390, 385, 375, 365, 355, 345, 330, 315], "套房": [385, 380, 375, 365, 355, 345, 335, 320, 305] }
+        "彰化市": { "整層": [600,590,580,565,550,535,520,500,475], "套房": [745,735,720,705,685,665,645,620,590] },
+        "員林市": { "整層": [600,590,580,565,550,535,520,500,475], "套房": [675,665,650,635,620,600,585,560,535] },
+        "和美鎮": { "整層": [555,545,535,520,510,495,480,460,440], "套房": [565,555,550,535,520,505,490,470,450] },
+        "鹿港鎮": { "整層": [505,500,490,475,465,450,440,420,400], "套房": [565,555,550,535,520,505,490,470,450] }
     },
     "南投縣": {
-        "南投市": { "整層": [600, 590, 580, 565, 550, 535, 520, 500, 475], "套房": [660, 650, 640, 625, 605, 590, 575, 550, 525] },
-        "埔里鎮": { "整層": [580, 570, 560, 545, 530, 515, 500, 480, 460], "套房": [600, 590, 580, 565, 550, 535, 520, 500, 475] },
-        "草屯鎮": { "整層": [625, 615, 605, 590, 575, 560, 545, 520, 495], "套房": [660, 650, 640, 625, 605, 590, 575, 550, 525] },
-        "竹山鎮": { "整層": [435, 425, 420, 410, 400, 390, 375, 360, 345], "套房": [385, 380, 375, 365, 355, 345, 335, 320, 305] },
-        "集集鎮": { "整層": [400, 390, 385, 375, 365, 355, 345, 330, 315], "套房": [385, 380, 375, 365, 355, 345, 335, 320, 305] },
-        "名間鄉": { "整層": [410, 405, 395, 385, 375, 365, 355, 340, 325], "套房": [385, 380, 375, 365, 355, 345, 335, 320, 305] },
-        "鹿谷鄉": { "整層": [400, 390, 385, 375, 365, 355, 345, 330, 315], "套房": [385, 380, 375, 365, 355, 345, 335, 320, 305] },
-        "中寮鄉": { "整層": [375, 370, 360, 355, 345, 335, 325, 310, 295], "套房": [385, 380, 375, 365, 355, 345, 335, 320, 305] },
-        "魚池鄉": { "整層": [400, 390, 385, 375, 365, 355, 345, 330, 315], "套房": [385, 380, 375, 365, 355, 345, 335, 320, 305] },
-        "國姓鄉": { "整層": [375, 370, 360, 355, 345, 335, 325, 310, 295], "套房": [385, 380, 375, 365, 355, 345, 335, 320, 305] },
-        "水里鄉": { "整層": [400, 390, 385, 375, 365, 355, 345, 330, 315], "套房": [385, 380, 375, 365, 355, 345, 335, 320, 305] },
-        "信義鄉": { "整層": [375, 370, 360, 355, 345, 335, 325, 310, 295], "套房": [385, 380, 375, 365, 355, 345, 335, 320, 305] },
-        "仁愛鄉": { "整層": [375, 370, 360, 355, 345, 335, 325, 310, 295], "套房": [385, 380, 375, 365, 355, 345, 335, 320, 305] }
+        "南投市": { "整層": [600,590,580,565,550,535,520,500,475], "套房": [660,650,640,625,605,590,575,550,525] },
+        "草屯鎮": { "整層": [625,615,605,590,575,560,545,520,495], "套房": [660,650,640,625,605,590,575,550,525] },
+        "埔里鎮": { "整層": [580,570,560,545,530,515,500,480,460], "套房": [600,590,580,565,550,535,520,500,475] }
     }
 };
 
-function toggleAgeInput() {
-    const mode = document.getElementById('ageMode').value;
-    document.getElementById('manualAgeGroup').style.display = (mode === 'manual') ? 'block' : 'none';
-    document.getElementById('dateAgeGroup').style.display = (mode === 'date') ? 'block' : 'none';
-}
+// 補充彰投其他通用鄉鎮數據
+const otherChTowns = ["溪湖鎮","田中鎮","北斗鎮","二林鎮","線西鄉","伸港鄉","福興鄉","秀水鄉","花壇鄉","芬園鄉","埔鹽鄉","埔心鄉","永靖鄉","社頭鄉","二水鄉","田尾鄉","埤頭鄉","芳苑鄉","大村鄉","竹塘鄉","溪州鄉"];
+const otherNtTowns = ["竹山鎮","集集鎮","名間鄉","鹿谷鄉","中寮鄉","魚池鄉","國姓鄉","水里鄉","信義鄉","仁愛鄉"];
 
-function calcAgeByDate() {
-    const dateStr = document.getElementById('buildDate').value;
-    const currentROCYear = new Date().getFullYear() - 1911;
-    if (dateStr.length >= 2) {
-        let buildYear = 0;
-        if (dateStr.length >= 7) { buildYear = parseInt(dateStr.substring(0, 3)); }
-        else if (dateStr.length >= 2) { buildYear = parseInt(dateStr.substring(0, 2)); }
-        const calculatedAge = Math.max(0, currentROCYear - buildYear);
-        document.getElementById('age').value = calculatedAge;
-        calculate();
+// 數據載入器 (處理彰投各鄉鎮單價邏輯)
+function getBaseData(city, dist, type) {
+    // 檢查是否有專屬數據
+    if (masterData[city][dist]) return masterData[city][dist][type];
+    
+    // 若無專屬，帶入通用基準
+    if (city === "彰化縣") {
+        return type === "整層" ? [400,390,385,375,365,355,345,330,315] : [385,380,375,365,355,345,335,320,305];
+    } else if (city === "南投縣") {
+        if (dist === "竹山鎮") return type === "整層" ? [435,425,420,410,400,390,375,360,345] : [385,380,375,365,355,345,335,320,305];
+        if (dist === "名間鄉") return type === "整層" ? [410,405,395,385,375,365,355,340,325] : [385,380,375,365,355,345,335,320,305];
+        return type === "整層" ? [400,390,385,375,365,355,345,330,315] : [385,380,375,365,355,345,335,320,305];
     }
-}
-
-function calcAreaHelper() {
-    const m = parseFloat(document.getElementById('h_main').value) || 0;
-    const s = parseFloat(document.getElementById('h_sub').value) || 0;
-    const c = (parseFloat(document.getElementById('h_common1').value) || 0) + (parseFloat(document.getElementById('h_common2').value) || 0);
-    const pings = Math.round((m + s + c) * 0.3025 * 100) / 100;
-    document.getElementById('helperResult').innerText = pings;
-    document.getElementById('area').value = pings;
-    calculate();
 }
 
 function initDistricts() {
     const city = document.getElementById('city').value;
     const distSelect = document.getElementById('district');
     distSelect.innerHTML = "";
-    const districts = Object.keys(masterData[city]);
-    districts.forEach(d => {
+    
+    let list = Object.keys(masterData[city]);
+    if (city === "彰化縣") list = list.concat(otherChTowns);
+    if (city === "南投縣") list = list.concat(otherNtTowns);
+    
+    list.forEach(d => {
         let opt = document.createElement('option');
         opt.value = d; opt.innerText = d;
         distSelect.appendChild(opt);
     });
     calculate();
+}
+
+function calcAgeByDate() {
+    const s = document.getElementById('buildDate').value;
+    if (s.length >= 2) {
+        const year = parseInt(s.length >= 7 ? s.substring(0,3) : s.substring(0,2));
+        const currentYear = new Date().getFullYear() - 1911;
+        document.getElementById('age').value = Math.max(0, currentYear - year);
+        calculate();
+    }
 }
 
 function calculate() {
@@ -251,39 +215,31 @@ function calculate() {
     const locAdj = parseFloat(document.getElementById('locAdj').value);
     const renAdj = parseFloat(document.getElementById('renAdj').value);
 
-    let idx = Math.min(8, Math.floor(age / 5));
+    const priceList = getBaseData(city, dist, type);
+    const ageIdx = Math.min(8, Math.floor(age / 5));
+    const basePrice = priceList[ageIdx];
     
-    // 獲取數據庫中的單價數組
-    const prices = masterData[city][dist][type];
-    const basePrice = prices[idx];
-    document.getElementById('resRef').innerText = basePrice;
+    document.getElementById('resRef').innerText = basePrice + " 元/坪";
 
-    // 計算調整後單價
-    let finalUnitPrice = Math.round(basePrice * (1 + (locAdj + renAdj) / 100) * 100) / 100;
-    document.getElementById('resAdj').innerText = finalUnitPrice;
+    const finalUnitPrice = Math.round(basePrice * (1 + (locAdj + renAdj) / 100) * 100) / 100;
+    document.getElementById('resAdj').innerText = finalUnitPrice + " 元/坪";
 
-    // 總額上限邏輯
     let cap = (city === "桃園市") ? (type === "整層" ? 35000 : 21000) : (type === "整層" ? 22000 : 13000);
     const maxVal = Math.min(finalUnitPrice * area, cap);
-    document.getElementById('resMax').innerText = Math.round(maxVal).toLocaleString();
+    document.getElementById('resMax').innerText = Math.round(maxVal).toLocaleString() + " 元";
 
     const box = document.getElementById('statusBox');
     if (rent === 0 || area === 0) {
-        box.innerText = "請輸入坪數與合約租金";
-        box.className = "status-init";
+        box.innerText = "請輸入坪數與租金"; box.className = "status-init";
     } else if (rent > maxVal) {
-        box.innerText = "不符合 (超過核定總額上限)";
-        box.className = "status-danger";
-    } else if ((rent / area) <= finalUnitPrice) {
-        box.innerText = "符合評定標準";
-        box.className = "status-normal";
+        box.innerText = "不符合 (超過總額上限)"; box.className = "status-danger";
+    } else if ((rent/area) <= finalUnitPrice) {
+        box.innerText = "符合標準"; box.className = "status-normal";
     } else {
-        box.innerText = "超過調整後單價";
-        box.className = "status-warning";
+        box.innerText = "需個案說明 (超過調整後單價)"; box.className = "status-warning";
     }
 }
 
-// 初始化
 initDistricts();
 </script>
 </body>

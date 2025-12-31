@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>租金評定試算系統 v6.0</title>
+    <title>租金評定試算系統 v6.0 完整版</title>
     <style>
         :root { --primary: #2c3e50; --bg: #f0f4f8; --white: #ffffff; --accent: #3498db; --helper-bg: #fff9db; --date-bg: #e3f2fd; }
         body { font-family: "Microsoft JhengHei", sans-serif; background-color: var(--bg); padding: 20px; color: #333; }
@@ -15,7 +15,7 @@
         .card { padding: 20px; border-radius: 8px; border: 1px solid #dee2e6; background-color: #fff; }
         .input-group { background-color: #f8fbff; }
         
-        /* 區塊樣式 */
+        /* 助手區塊樣式 */
         .helper-box { padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid transparent; }
         .area-helper { background-color: var(--helper-bg); border-color: #f5e79e; }
         .date-helper { background-color: var(--date-bg); border-color: #bbdefb; }
@@ -41,7 +41,7 @@
 <body>
 
 <div class="container">
-    <h2>租金評定試算系統 (含屋齡自動計算)</h2>
+    <h2>租金評定試算系統 (中彰投全功能版)</h2>
     
     <div class="grid">
         <div class="card input-group">
@@ -69,30 +69,31 @@
                     <input type="number" id="h_common1" placeholder="共有1" oninput="calcAreaHelper()">
                     <input type="number" id="h_common2" placeholder="共有2" oninput="calcAreaHelper()">
                 </div>
-                <div style="text-align: right; font-size: 0.9rem;">換算結果：<b id="helperResult">0</b> 坪</div>
+                <div style="text-align: right; font-size: 0.9rem; margin-top: 5px;">
+                    換算結果：<b id="helperResult" style="color:#d35400;">0</b> 坪
+                </div>
             </div>
 
             <div class="helper-box date-helper">
                 <label>屋齡計算方式</label>
                 <select id="ageMode" onchange="toggleAgeInput()">
-                    <option value="manual">手動輸入屋齡</option>
+                    <option value="manual">手動輸入屋齡 (年)</option>
                     <option value="date">按建築完成日期計算</option>
                 </select>
                 
                 <div id="manualAgeGroup">
-                    <label>輸入屋齡 (年)</label>
                     <input type="number" id="age" value="0" min="0" oninput="calculate()">
                 </div>
                 
                 <div id="dateAgeGroup" style="display:none;">
-                    <label>建築完成日期 <span class="small-hint">(如：0850625)</span></label>
-                    <input type="text" id="buildDate" placeholder="請輸入民國年月日" oninput="calcAgeByDate()">
-                    <div style="font-size: 0.85rem; color: #0d47a1;">自動計算屋齡：<b id="autoAgeRes">0</b> 年</div>
+                    <label class="small-hint">請輸入民國年月日 (如：0850625)</label>
+                    <input type="text" id="buildDate" placeholder="例：0850625" oninput="calcAgeByDate()">
+                    <div style="font-size: 0.85rem; color: #0d47a1;">自動識別屋齡：<b id="autoAgeRes">0</b> 年</div>
                 </div>
             </div>
 
-            <label>坪數 (坪)</label>
-            <input type="number" id="area" value="0" min="0" step="0.01" oninput="calculate()">
+            <label>計算坪數 (坪)</label>
+            <input type="number" id="area" value="0" min="0.1" step="0.01" oninput="calculate()">
 
             <div style="display:flex; gap:10px;">
                 <div style="flex:1;">
@@ -119,73 +120,180 @@
                 <span class="result-value"><span id="resRef">0</span><span class="unit">元/坪</span></span>
             </div>
             <div class="result-row">
-                <span class="result-label">核定租金上限</span>
+                <span class="result-label">調整後單價</span>
+                <span class="result-value"><span id="resAdj">0</span><span class="unit">元/坪</span></span>
+            </div>
+            <div class="result-row">
+                <span class="result-label" style="font-weight: bold; color: #d35400;">核定租金上限</span>
                 <span class="result-value" style="color: #d35400; font-size: 1.4rem;"><span id="resMax">0</span><span class="unit">元</span></span>
             </div>
-            <div id="statusBox" class="status-init">請輸入資料</div>
+            <div class="result-row">
+                <span class="result-label">簽約單價</span>
+                <span class="result-value"><span id="resContract">0</span><span class="unit">元/坪</span></span>
+            </div>
+
+            <div id="statusBox" class="status-init">請輸入完整資料</div>
             
             <button class="btn-reset" onclick="location.reload()">重設所有欄位</button>
             
             <div style="margin-top: 25px; padding: 15px; background: #f8f9fa; border-radius: 6px; font-size: 0.85rem; color: #666; line-height: 1.6;">
-                <strong>操作提醒：</strong><br>
-                1. <strong>屋齡計算</strong>：若輸入「0850625」，系統會自動識別為民國 85 年，計算至今年 (113年) 為 28 年屋齡。<br>
-                2. <strong>數據來源</strong>：依據 之評定表。<br>
-                3. <strong>上限設定</strong>：<br>
-                - 桃園：35,000 / 21,000<br>
-                - 彰投：22,000 / 13,000
+                <strong>當前地區限制：</strong><br>
+                - <b>桃園</b>：整層 35,000 / 套房 21,000<br>
+                - <b>彰化/南投</b>：整層 22,000 / 套房 13,000<br>
+                <strong>計算公式：</strong><br>
+                - 1 平方公尺 = 0.3025 坪<br>
+                - 參考單價依據
             </div>
         </div>
     </div>
 </div>
 
 <script>
-// 數據與之前相同... (略過顯示以節省空間，但完整程式碼會包含)
-const masterData = { "桃園市": [...], "彰化縣": [...], "南投縣": [...] }; 
+const masterData = {
+    "桃園市": [
+        { d: "龜山區", t: "整層", p: [855, 840, 825, 805, 785, 760, 740, 710, 675] },
+        { d: "桃園區", t: "整層", p: [780, 770, 755, 735, 720, 700, 680, 650, 620] },
+        { d: "中壢區", t: "整層", p: [770, 760, 745, 725, 705, 685, 670, 640, 610] },
+        { d: "蘆竹區", t: "整層", p: [745, 735, 720, 705, 685, 665, 645, 620, 590] },
+        { d: "八德區", t: "整層", p: [735, 720, 710, 690, 675, 655, 635, 610, 580] },
+        { d: "大園區", t: "整層", p: [735, 720, 710, 690, 675, 655, 635, 610, 580] },
+        { d: "平鎮區", t: "整層", p: [720, 710, 700, 680, 660, 645, 625, 600, 570] },
+        { d: "觀音區", t: "整層", p: [700, 685, 675, 660, 640, 625, 605, 580, 555] },
+        { d: "楊梅區", t: "整層", p: [615, 605, 595, 580, 565, 550, 535, 510, 485] },
+        { d: "新屋區", t: "整層", p: [580, 570, 560, 545, 530, 515, 500, 480, 460] },
+        { d: "龍潭區", t: "整層", p: [580, 570, 560, 545, 530, 515, 500, 480, 460] },
+        { d: "大溪區", t: "整層", p: [565, 555, 550, 535, 520, 505, 490, 470, 450] },
+        { d: "復興區", t: "整層", p: [375, 370, 360, 355, 345, 335, 325, 310, 295] },
+        { d: "龜山區", t: "套房", p: [1225, 1205, 1185, 1155, 1125, 1095, 1065, 1020, 970] },
+        { d: "蘆竹區", t: "套房", p: [1180, 1160, 1140, 1110, 1080, 1050, 1020, 980, 935] },
+        { d: "桃園區", t: "套房", p: [1120, 1100, 1080, 1055, 1025, 1000, 970, 930, 885] },
+        { d: "中壢區", t: "套房", p: [1080, 1065, 1045, 1020, 995, 965, 940, 900, 855] },
+        { d: "八德區", t: "套房", p: [1045, 1030, 1010, 985, 960, 935, 905, 870, 830] },
+        { d: "大園區", t: "套房", p: [1045, 1030, 1010, 985, 960, 935, 905, 870, 830] },
+        { d: "平鎮區", t: "套房", p: [900, 885, 870, 850, 830, 805, 780, 750, 715] },
+        { d: "觀音區", t: "套房", p: [900, 885, 870, 850, 830, 805, 780, 750, 715] },
+        { d: "楊梅區", t: "套房", p: [830, 815, 805, 780, 760, 740, 720, 690, 660] },
+        { d: "龍潭區", t: "套房", p: [830, 815, 805, 780, 760, 740, 720, 690, 660] },
+        { d: "大溪區", t: "套房", p: [710, 700, 685, 670, 650, 635, 615, 590, 565] },
+        { d: "新屋區", t: "套房", p: [625, 615, 605, 590, 575, 560, 545, 520, 495] },
+        { d: "復興區", t: "套房", p: [385, 380, 375, 365, 355, 345, 335, 320, 305] }
+    ],
+    "彰化縣": [
+        { d: "員林市", t: "整層", p: [600, 590, 580, 565, 550, 535, 520, 500, 475] },
+        { d: "彰化市", t: "整層", p: [600, 590, 580, 565, 550, 535, 520, 500, 475] },
+        { d: "和美鎮", t: "整層", p: [555, 545, 535, 520, 510, 495, 480, 460, 440] },
+        { d: "鹿港鎮", t: "整層", p: [505, 500, 490, 475, 465, 450, 440, 420, 400] },
+        { d: "秀水鄉", t: "整層", p: [480, 475, 465, 455, 445, 430, 420, 400, 380] },
+        { d: "社頭鄉", t: "整層", p: [470, 465, 455, 445, 430, 420, 410, 390, 375] },
+        { d: "二林鎮", t: "整層", p: [445, 440, 430, 420, 410, 400, 385, 370, 355] },
+        { d: "大村鄉", t: "整層", p: [445, 440, 430, 420, 410, 400, 385, 370, 355] },
+        { d: "其他", t: "整層", p: [375, 370, 360, 355, 345, 335, 325, 310, 295] },
+        { d: "彰化市", t: "套房", p: [745, 735, 720, 705, 685, 665, 645, 620, 590] },
+        { d: "員林市", t: "套房", p: [675, 665, 650, 635, 620, 600, 585, 560, 535] },
+        { d: "和美鎮", t: "套房", p: [565, 555, 550, 535, 520, 505, 490, 470, 450] },
+        { d: "其他", t: "套房", p: [385, 380, 375, 365, 355, 345, 335, 320, 305] }
+    ],
+    "南投縣": [
+        { d: "草屯鎮", t: "整層", p: [625, 615, 605, 590, 575, 560, 545, 520, 495] },
+        { d: "南投市", t: "整層", p: [600, 590, 580, 565, 550, 535, 520, 500, 475] },
+        { d: "埔里鎮", t: "整層", p: [580, 570, 560, 545, 530, 515, 500, 480, 460] },
+        { d: "其他", t: "整層", p: [375, 370, 360, 355, 345, 335, 325, 310, 295] },
+        { d: "南投市", t: "套房", p: [660, 650, 640, 625, 605, 590, 575, 550, 525] },
+        { d: "草屯鎮", t: "套房", p: [660, 650, 640, 625, 605, 590, 575, 550, 525] },
+        { d: "其他", t: "套房", p: [385, 380, 375, 365, 355, 345, 335, 320, 305] }
+    ]
+};
 
-// 屋齡計算邏輯
+// 切換屋齡輸入模式
 function toggleAgeInput() {
     const mode = document.getElementById('ageMode').value;
     document.getElementById('manualAgeGroup').style.display = (mode === 'manual') ? 'block' : 'none';
     document.getElementById('dateAgeGroup').style.display = (mode === 'date') ? 'block' : 'none';
-    calculate();
 }
 
+// 建築完成日計算
 function calcAgeByDate() {
     const dateStr = document.getElementById('buildDate').value;
-    // 取得當前民國年份 (如 2024年 = 民國 113年)
     const currentROCYear = new Date().getFullYear() - 1911;
-    
-    if (dateStr.length >= 3) {
-        // 抓取前三位或前二位作為年份 (處理如 085 或 102)
+    if (dateStr.length >= 2) {
         let buildYear = 0;
-        if (dateStr.length === 7) { // 格式如 0850625
-            buildYear = parseInt(dateStr.substring(0, 3));
-        } else if (dateStr.length === 6) { // 格式如 850625
-            buildYear = parseInt(dateStr.substring(0, 2));
-        } else {
-            buildYear = parseInt(dateStr);
-        }
-
+        if (dateStr.length >= 7) { buildYear = parseInt(dateStr.substring(0, 3)); }
+        else if (dateStr.length >= 2) { buildYear = parseInt(dateStr.substring(0, 2)); }
         const calculatedAge = Math.max(0, currentROCYear - buildYear);
         document.getElementById('autoAgeRes').innerText = calculatedAge;
-        document.getElementById('age').value = calculatedAge; // 隱形同步到主屋齡欄位
+        document.getElementById('age').value = calculatedAge; 
         calculate();
     }
 }
 
-// 面積與計算邏輯 (整合上述版本)
+// 面積助手
 function calcAreaHelper() {
-    const main = parseFloat(document.getElementById('h_main').value) || 0;
-    const sub = parseFloat(document.getElementById('h_sub').value) || 0;
+    const m = parseFloat(document.getElementById('h_main').value) || 0;
+    const s = parseFloat(document.getElementById('h_sub').value) || 0;
     const c1 = parseFloat(document.getElementById('h_common1').value) || 0;
     const c2 = parseFloat(document.getElementById('h_common2').value) || 0;
-    const pings = Math.round((main + sub + c1 + c2) * 0.3025 * 100) / 100;
+    const pings = Math.round((m + s + c1 + c2) * 0.3025 * 100) / 100;
     document.getElementById('helperResult').innerText = pings;
     document.getElementById('area').value = pings;
     calculate();
 }
 
-// ... 剩餘 initDistricts 與 calculate 函數 (包含分區上限邏輯) ...
+function initDistricts() {
+    const city = document.getElementById('city').value;
+    const distSelect = document.getElementById('district');
+    distSelect.innerHTML = "";
+    const uniqueDists = [...new Set(masterData[city].map(item => item.d))];
+    uniqueDists.forEach(name => {
+        let opt = document.createElement('option');
+        opt.value = name; opt.innerText = name;
+        distSelect.appendChild(opt);
+    });
+    calculate();
+}
+
+function calculate() {
+    const city = document.getElementById('city').value;
+    const dist = document.getElementById('district').value;
+    const type = document.getElementById('caseType').value;
+    const age = parseFloat(document.getElementById('age').value) || 0;
+    const area = parseFloat(document.getElementById('area').value) || 0;
+    const locAdj = parseFloat(document.getElementById('locAdj').value);
+    const renAdj = parseFloat(document.getElementById('renAdj').value);
+    const rent = parseFloat(document.getElementById('rent').value) || 0;
+
+    // 取得級距索引 (0-4年=idx 0, 5-9年=idx 1...)
+    let idx = Math.floor(age / 5);
+    if (idx > 8) idx = 8;
+
+    // 查表
+    let entry = masterData[city].find(i => i.d === dist && i.t === type);
+    if (!entry) { entry = masterData[city].find(i => i.d === "其他" && i.t === type); }
+    
+    let basePrice = entry ? entry.p[idx] : 0;
+    document.getElementById('resRef').innerText = basePrice;
+
+    // 調整後單價
+    const adjPrice = Math.round(basePrice * (1 + (locAdj + renAdj) / 100) * 100) / 100;
+    document.getElementById('resAdj').innerText = adjPrice;
+
+    // 地區上限判斷
+    let cap = (city === "桃園市") ? (type === "整層" ? 35000 : 21000) : (type === "整層" ? 22000 : 13000);
+    const maxVal = Math.min(adjPrice * area, cap);
+    document.getElementById('resMax').innerText = Math.round(maxVal).toLocaleString();
+
+    // 簽約單價
+    const conPrice = area > 0 ? Math.round((rent / area) * 100) / 100 : 0;
+    document.getElementById('resContract').innerText = conPrice;
+
+    // 狀態框
+    const box = document.getElementById('statusBox');
+    if (rent === 0) { box.innerText = "請輸入完整資料"; box.className = "status-init"; }
+    else if (rent > maxVal) { box.innerText = "不符 (超過總額上限)"; box.className = "status-danger"; }
+    else if (conPrice <= basePrice) { box.innerText = "符合標準"; box.className = "status-normal"; }
+    else { box.innerText = "例外 (需個案協商)"; box.className = "status-warning"; }
+}
+
+initDistricts();
 </script>
 </body>
 </html>

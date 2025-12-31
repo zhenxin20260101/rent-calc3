@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>租金評定試算系統 v4.0</title>
+    <title>租金評定試算系統 v5.1</title>
     <style>
-        :root { --primary: #2c3e50; --bg: #f0f4f8; --white: #ffffff; --accent: #3498db; }
+        :root { --primary: #2c3e50; --bg: #f0f4f8; --white: #ffffff; --accent: #3498db; --helper-bg: #fff9db; }
         body { font-family: "Microsoft JhengHei", sans-serif; background-color: var(--bg); padding: 20px; color: #333; }
         .container { max-width: 1000px; margin: auto; background: var(--white); padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         h2 { text-align: center; color: var(--primary); margin-bottom: 25px; border-bottom: 2px solid var(--accent); padding-bottom: 10px; }
@@ -14,6 +14,11 @@
         
         .card { padding: 20px; border-radius: 8px; border: 1px solid #dee2e6; background-color: #fff; }
         .input-group { background-color: #f8fbff; }
+        
+        .area-helper { background-color: var(--helper-bg); border: 1px solid #f5e79e; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        .area-helper h4 { margin-top: 0; color: #856404; display: flex; justify-content: space-between; }
+        .area-helper-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .area-helper input { margin-bottom: 10px; padding: 8px; border: 1px solid #dcd0a1; }
         
         label { display: block; margin-bottom: 8px; font-weight: bold; font-size: 0.95rem; }
         select, input { width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid #ced4da; border-radius: 6px; box-sizing: border-box; font-size: 1rem; }
@@ -28,15 +33,15 @@
         .status-warning { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
         .status-danger { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
 
-        button { width: 100%; padding: 12px; background-color: #6c757d; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; }
-        button:hover { background-color: #5a6268; }
+        .btn-reset { width: 100%; padding: 10px; background-color: #6c757d; color: white; border: none; border-radius: 6px; cursor: pointer; margin-top: 10px; }
         .unit { font-size: 0.8rem; margin-left: 5px; color: #888; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>租金評定試算系統 (桃園/南投/彰化)</h2>
+    <h2>租金評定試算系統 (分區上限調整版)</h2>
+    
     <div class="grid">
         <div class="card input-group">
             <label>1. 選擇縣市</label>
@@ -55,11 +60,36 @@
                 <option value="套房">套房</option>
             </select>
 
-            <label>屋齡 (年)</label>
-            <input type="number" id="age" value="0" min="0" oninput="calculate()">
+            <div class="area-helper">
+                <h4>面積換算助手 (依謄本輸入) <span style="font-size: 0.7rem;">單位：平方公尺</span></h4>
+                <div class="area-helper-grid">
+                    <div>
+                        <label style="font-size: 0.8rem;">主建物</label>
+                        <input type="number" id="h_main" placeholder="紅字1" oninput="calcAreaHelper()">
+                    </div>
+                    <div>
+                        <label style="font-size: 0.8rem;">附屬建物</label>
+                        <input type="number" id="h_sub" placeholder="紅字2" oninput="calcAreaHelper()">
+                    </div>
+                    <div>
+                        <label style="font-size: 0.8rem;">共有部分 1</label>
+                        <input type="number" id="h_common1" placeholder="紅字3" oninput="calcAreaHelper()">
+                    </div>
+                    <div>
+                        <label style="font-size: 0.8rem;">共有部分 2</label>
+                        <input type="number" id="h_common2" placeholder="紅字4" oninput="calcAreaHelper()">
+                    </div>
+                </div>
+                <div style="text-align: right; color: #856404; font-weight: bold; font-size: 0.9rem;">
+                    自動換算：<span id="helperResult">0</span> 坪
+                </div>
+            </div>
 
             <label>坪數 (坪)</label>
-            <input type="number" id="area" value="20" min="0.1" step="0.1" oninput="calculate()">
+            <input type="number" id="area" value="20" min="0.1" step="0.01" oninput="calculate()">
+
+            <label>屋齡 (年)</label>
+            <input type="number" id="age" value="0" min="0" oninput="calculate()">
 
             <div style="display:flex; gap:10px;">
                 <div style="flex:1;">
@@ -90,8 +120,8 @@
                 <span class="result-value"><span id="resAdj">0</span><span class="unit">元/坪</span></span>
             </div>
             <div class="result-row">
-                <span class="result-label">租金上限</span>
-                <span class="result-value" style="color: #d35400;"><span id="resMax">0</span><span class="unit">元</span></span>
+                <span class="result-label" style="font-weight: bold; color: #d35400;">核定租金上限</span>
+                <span class="result-value" style="color: #d35400; font-size: 1.4rem;"><span id="resMax">0</span><span class="unit">元</span></span>
             </div>
             <div class="result-row">
                 <span class="result-label">簽約單價</span>
@@ -100,14 +130,20 @@
 
             <div id="statusBox" class="status-init">請輸入完整資料</div>
             
-            <button onclick="location.reload()" style="margin-top: 20px;">重設全部</button>
-            <p style="font-size: 0.8rem; color: #999; margin-top: 15px;">* 說明：整層上限 35,000 元，套房上限 21,000 元。<br>* 數據依據 1217 V2.5 版本評定表。</p>
+            <button class="btn-reset" onclick="location.reload()">重設所有欄位</button>
+            
+            <div style="margin-top: 25px; padding: 15px; background: #f8f9fa; border-radius: 6px; font-size: 0.85rem; color: #666;">
+                <strong>當前地區上限設定：</strong><br>
+                1. <strong>桃園市</strong>：整層 35,000 / 套房 21,000<br>
+                2. <strong>彰化、南投</strong>：整層 22,000 / 套房 13,000<br>
+                3. 換算公式：1 平方公尺 = 0.3025 坪
+            </div>
         </div>
     </div>
 </div>
 
 <script>
-// 整合三縣市數據
+// 數據庫
 const masterData = {
     "桃園市": [
         { d: "龜山區", t: "整層", p: [855, 840, 825, 805, 785, 760, 740, 710, 675] },
@@ -211,19 +247,26 @@ const masterData = {
     ]
 };
 
-// 初始化鄉鎮市區下拉選單
+function calcAreaHelper() {
+    const main = parseFloat(document.getElementById('h_main').value) || 0;
+    const sub = parseFloat(document.getElementById('h_sub').value) || 0;
+    const c1 = parseFloat(document.getElementById('h_common1').value) || 0;
+    const c2 = parseFloat(document.getElementById('h_common2').value) || 0;
+    const totalSqM = main + sub + c1 + c2;
+    const pings = Math.round(totalSqM * 0.3025 * 100) / 100;
+    document.getElementById('helperResult').innerText = pings;
+    document.getElementById('area').value = pings;
+    calculate();
+}
+
 function initDistricts() {
     const city = document.getElementById('city').value;
     const distSelect = document.getElementById('district');
     distSelect.innerHTML = "";
-    
-    // 過濾出該縣市的不重複鄉鎮名
     const uniqueDists = [...new Set(masterData[city].map(item => item.d))];
-    
     uniqueDists.forEach(name => {
         let opt = document.createElement('option');
-        opt.value = name;
-        opt.innerText = name;
+        opt.value = name; opt.innerText = name;
         distSelect.appendChild(opt);
     });
     calculate();
@@ -239,7 +282,6 @@ function calculate() {
     const renAdj = parseFloat(document.getElementById('renAdj').value);
     const rent = parseFloat(document.getElementById('rent').value) || 0;
 
-    // 1. 抓取單價數據 (依屋齡分段)
     const entry = masterData[city].find(i => i.d === dist && i.t === type);
     let basePrice = 0;
     if (entry) {
@@ -249,25 +291,29 @@ function calculate() {
     }
     document.getElementById('resRef').innerText = basePrice;
 
-    // 2. 調整後單價
     const adjPrice = Math.round(basePrice * (1 + (locAdj + renAdj) / 100) * 100) / 100;
     document.getElementById('resAdj').innerText = adjPrice;
 
-    // 3. 租金上限 (整層 35000 / 套房 21000)
-    const cap = (type === "整層") ? 35000 : 21000;
+    // 分區上限邏輯調整
+    let cap = 0;
+    if (city === "桃園市") {
+        cap = (type === "整層") ? 35000 : 21000;
+    } else {
+        // 彰化縣與南投縣
+        cap = (type === "整層") ? 22000 : 13000;
+    }
+    
     const maxAllowed = Math.min(adjPrice * area, cap);
     document.getElementById('resMax').innerText = Math.round(maxAllowed).toLocaleString();
 
-    // 4. 簽約單價
     const contractUnit = area > 0 ? Math.round((rent / area) * 100) / 100 : 0;
     document.getElementById('resContract').innerText = contractUnit;
 
-    // 5. 狀態判定
     const box = document.getElementById('statusBox');
     if (rent === 0) {
         box.innerText = "請輸入資料"; box.className = "status-init";
     } else if (rent > maxAllowed) {
-        box.innerText = "不符 (超過總額上限)"; box.className = "status-danger";
+        box.innerText = "不符 (超過地區上限)"; box.className = "status-danger";
     } else if (contractUnit <= basePrice) {
         box.innerText = "標準案件"; box.className = "status-normal";
     } else {
@@ -275,7 +321,6 @@ function calculate() {
     }
 }
 
-// 首次加載
 initDistricts();
 </script>
 

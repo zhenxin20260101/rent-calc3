@@ -3,37 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>租金評定系統 鎮信/安東專業版</title>
+    <title>租金評定系統 鎮信/安東</title>
     <style>
         :root { --primary: #2c3e50; --bg: #f2f5f8; --accent: #3498db; --danger: #e74c3c; --success: #27ae60; }
         body { font-family: -apple-system, "Microsoft JhengHei", sans-serif; background-color: var(--bg); margin: 0; padding: 10px; }
         .container { max-width: 1000px; margin: auto; background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); overflow: hidden; }
         .header { background: var(--primary); color: white; padding: 15px; text-align: center; position: relative; }
         .mode-toggle { position: absolute; right: 10px; top: 10px; background: rgba(255,255,255,0.2); border: 1px solid white; color: white; padding: 5px 10px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; }
-        
         .main-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 0; }
         .input-side { padding: 20px; border-right: 1px solid #eee; }
         .result-side { padding: 20px; background: #fafbfc; }
-
         @media (max-width: 850px) { .main-grid { grid-template-columns: 1fr; } .input-side { border-right: none; } }
         body.mobile-mode .container { max-width: 480px; }
-
         .section-title { font-size: 1rem; color: var(--accent); font-weight: 800; margin: 15px 0 10px 0; border-left: 5px solid var(--accent); padding-left: 10px; }
-        
         label { display: block; margin-bottom: 5px; font-size: 0.85rem; font-weight: bold; color: #4a5568; }
         select, input { width: 100%; height: 40px; padding: 0 10px; margin-bottom: 10px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1rem; box-sizing: border-box; }
-        
-        /* 抽屜按鈕 */
         .drawer-btn { background: #ebf8ff; border: 1px solid #3182ce; color: #3182ce; width: 100%; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; margin-bottom: 15px; display: flex; justify-content: space-between; }
         #areaCalculator { display: none; background: #fff; border: 2px solid #3498db; border-radius: 12px; padding: 12px; margin-bottom: 20px; }
-        
         .calc-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; }
         .calc-table th, .calc-table td { border: 1px solid #cbd5e0; padding: 4px; text-align: center; }
         .calc-table input { height: 28px; margin-bottom: 0; border: 1px solid #ccc; color: #e74c3c; font-weight: bold; text-align: center; }
-        
         .calc-summary { background: #fff5f5; padding: 10px; border-radius: 8px; margin-top: 10px; border: 1px solid #feb2b2; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
         .summary-item span { display: block; font-size: 1rem; font-weight: 900; color: #c53030; }
-
         .result-card { background: #fff; border: 2px solid #bee3f8; border-radius: 12px; padding: 15px; position: sticky; top: 10px; }
         .res-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.9rem; }
         .res-max-val { font-size: 2.2rem; font-weight: 900; color: var(--danger); }
@@ -55,7 +46,7 @@
     <div class="main-grid">
         <div class="input-side">
             <button class="drawer-btn" onclick="toggleDrawer()">
-                <span>面積換算器 (附屬建物/共有/車位)</span>
+                <span>面積換算 (含附屬建物/共有持分)</span>
                 <span id="drawerArrow">▼</span>
             </button>
 
@@ -69,22 +60,22 @@
                         <tr><td>雨遮</td><td><input type="number" id="mRain" value="0" oninput="runAreaCalc()"></td><td>1</td><td>1</td></tr>
                         <tr><td>平台</td><td><input type="number" id="mPlat" value="0" oninput="runAreaCalc()"></td><td>1</td><td>1</td></tr>
                         <tr><td>其他</td><td><input type="number" id="mOth" value="0" oninput="runAreaCalc()"></td><td>1</td><td>1</td></tr>
-                        <tr style="background:#f1f5f9;"><td colspan="4">共有部分 (含三個空位)</td></tr>
+                        <tr style="background:#f1f5f9;"><td colspan="4">共有部分持分</td></tr>
                         <tr><td>共有 1</td><td><input type="number" id="mS1" value="5699.05" oninput="runAreaCalc()"></td><td><input type="number" id="dS1" value="100000" oninput="runAreaCalc()"></td><td><input type="number" id="nS1" value="256" oninput="runAreaCalc()"></td></tr>
                         <tr><td>共有 2</td><td><input type="number" id="mS2" value="260.88" oninput="runAreaCalc()"></td><td><input type="number" id="dS2" value="10000" oninput="runAreaCalc()"></td><td><input type="number" id="nS2" value="425" oninput="runAreaCalc()"></td></tr>
                         <tr><td>共有 3</td><td><input type="number" id="mS3" value="0" oninput="runAreaCalc()"></td><td><input type="number" id="dS3" value="1" oninput="runAreaCalc()"></td><td><input type="number" id="nS3" value="0" oninput="runAreaCalc()"></td></tr>
-                        <tr><td style="color:blue; font-weight:bold;">車位面積</td><td><input type="number" id="mCar" value="0" oninput="runAreaCalc()"></td><td><input type="number" id="dCar" value="1" oninput="runAreaCalc()"></td><td><input type="number" id="nCar" value="0" oninput="runAreaCalc()"></td></tr>
+                        <tr><td style="color:blue;">車位面積</td><td><input type="number" id="mCar" value="0" oninput="runAreaCalc()"></td><td><input type="number" id="dCar" value="1" oninput="runAreaCalc()"></td><td><input type="number" id="nCar" value="0" oninput="runAreaCalc()"></td></tr>
                     </tbody>
                 </table>
                 <div class="calc-summary">
-                    <div class="summary-item">專有面積(m²) <span id="outPri">0</span></div>
-                    <div class="summary-item">共有面積(m²) <span id="outPub">0</span></div>
+                    <div class="summary-item">專有(m²) <span id="outPri">0</span></div>
+                    <div class="summary-item">共有(m²) <span id="outPub">0</span></div>
                     <div class="summary-item" style="color:var(--danger); grid-column: span 2;">扣車位後總坪數 <span id="outPing">0</span></div>
                 </div>
-                <button class="btn-apply" style="margin-top:10px;" onclick="applyArea()">帶入坪數</button>
+                <button class="btn-apply" style="margin-top:10px;" onclick="applyArea()">帶入計算坪數</button>
             </div>
 
-            <div class="section-title">基本資料</div>
+            <div class="section-title">評定核心資料</div>
             <div style="display:flex; gap:10px;">
                 <div style="flex:1;"><label>縣市</label><select id="city" onchange="initDistricts()"><option value="桃園市">桃園市</option><option value="彰化縣">彰化縣</option><option value="南投縣">南投縣</option></select></div>
                 <div style="flex:1;"><label>行政區</label><select id="district" onchange="calculate()"></select></div>
@@ -96,11 +87,11 @@
             </div>
 
             <div style="display:flex; gap:10px;">
-                <div style="flex:1.5;"><label>完成日期(智慧)</label><input type="text" id="buildDate" placeholder="0830101" oninput="calcAgeByDate()"></div>
+                <div style="flex:1.5;"><label>完成日期</label><input type="text" id="buildDate" placeholder="0830101" oninput="calcAgeByDate()"></div>
                 <div style="flex:1;"><label>屋齡</label><input type="number" id="age" value="0" oninput="calculate()"></div>
             </div>
 
-            <div class="section-title">區位與裝修 (0%, 3%, 5%)</div>
+            <div class="section-title">區位與裝修加成</div>
             <div style="display:flex; gap:10px;">
                 <div style="flex:1;"><label>區位調整率</label>
                     <select id="adjLoc" onchange="calculate()">
@@ -109,12 +100,12 @@
                 </div>
                 <div style="flex:1;"><label>裝修調整率</label>
                     <select id="adjDec" onchange="calculate()">
-                        <option value="0">無裝修(無收納) (0%)</option><option value="0.03">簡易裝修(基本收納) (+3%)</option><option value="0.05">中等裝修(系統櫃) (+5%)</option>
+                        <option value="0">無裝修(基本居住) (0%)</option><option value="0.03">簡易裝修(基本收納) (+3%)</option><option value="0.05">中等裝修(系統櫃 (+5%)</option>
                     </select>
                 </div>
             </div>
 
-            <label>實際租金</label>
+            <label>實收租金</label>
             <input type="number" id="rent" placeholder="請輸入金額" oninput="calculate()">
         </div>
 
@@ -134,8 +125,39 @@
 </div>
 
 <script>
-// 數據庫 (縮減展示，核心結構不變)
-const masterData = { "桃園市": { "桃園區": { "整層": [780,770,755,735,720,700,680,650,620], "套房": [1120,1100,1080,1055,1025,1000,970,930,885] }, "中壢區": { "整層": [770,760,745,725,705,685,670,640,610], "套房": [1080,1065,1045,1020,995,965,940,900,855] }, "平鎮區": { "整層": [720,710,700,680,660,645,625,600,570], "套房": [900,885,870,850,830,805,780,750,715] } }, "彰化縣": { "彰化市": { "整層": [600,590,580,565,550,535,520,500,475], "套房": [745,735,720,705,685,665,645,620,590] } }, "南投縣": { "草屯鎮": { "整層": [625,615,605,590,575,560,545,520,495], "套房": [660,650,640,625,605,590,575,550,525] } } };
+// 完整全區域數據庫
+const masterData = {
+    "桃園市": {
+        "桃園區": { "整層": [780,770,755,735,720,700,680,650,620], "套房": [1120,1100,1080,1055,1025,1000,970,930,885] },
+        "中壢區": { "整層": [770,760,745,725,705,685,670,640,610], "套房": [1080,1065,1045,1020,995,965,940,900,855] },
+        "龜山區": { "整層": [855,840,825,805,785,760,740,710,675], "套房": [1225,1205,1185,1155,1125,1095,1065,1020,970] },
+        "蘆竹區": { "整層": [745,735,720,705,685,665,645,620,590], "套房": [1180,1160,1140,1110,1080,1050,1020,980,935] },
+        "八德區": { "整層": [735,720,710,690,675,655,635,610,580], "套房": [1045,1030,1010,985,960,935,905,870,830] },
+        "平鎮區": { "整層": [720,710,700,680,660,645,625,600,570], "套房": [900,885,870,850,830,805,780,750,715] },
+        "大園區": { "整層": [735,720,710,690,675,655,635,610,580], "套房": [1045,1030,1010,985,960,935,905,870,830] },
+        "觀音區": { "整層": [700,685,675,660,640,625,605,580,555], "套房": [900,885,870,850,830,805,780,750,715] },
+        "楊梅區": { "整層": [615,605,595,580,565,550,535,510,485], "套房": [830,815,805,780,760,740,720,690,660] },
+        "龍潭區": { "整層": [580,570,560,545,530,515,500,480,460], "套房": [830,815,805,780,760,740,720,690,660] },
+        "大溪區": { "整層": [565,555,550,535,520,505,490,470,450], "套房": [710,700,685,670,650,635,615,590,565] },
+        "新屋區": { "整層": [580,570,560,545,530,515,500,480,460], "套房": [625,615,605,590,575,560,545,520,495] },
+        "復興區": { "整層": [375,370,360,355,345,335,325,310,295], "套房": [385,380,375,365,355,345,335,320,305] }
+    },
+    "彰化縣": {
+        "彰化市": { "整層": [600,590,580,565,550,535,520,500,475], "套房": [745,735,720,705,685,665,645,620,590] },
+        "員林市": { "整層": [600,590,580,565,550,535,520,500,475], "套房": [675,665,650,635,620,600,585,560,535] },
+        "和美鎮": { "整層": [555,545,535,520,510,495,480,460,440], "套房": [565,555,550,535,520,505,490,470,450] },
+        "鹿港鎮": { "整層": [505,500,490,475,465,450,440,420,400], "套房": [565,555,550,535,520,505,490,470,450] },
+        "秀水鄉": { "整層": [480,475,465,455,445,430,420,400,380], "套房": [565,555,550,535,520,505,490,470,450] }
+    },
+    "南投縣": {
+        "草屯鎮": { "整層": [625,615,605,590,575,560,545,520,495], "套房": [660,650,640,625,605,590,575,550,525] },
+        "南投市": { "整層": [600,590,580,565,550,535,520,500,475], "套房": [660,650,640,625,605,590,575,550,525] },
+        "埔里鎮": { "整層": [580,570,560,545,530,515,500,480,460], "套房": [600,590,580,565,550,535,520,500,475] }
+    }
+};
+
+const otherCh = ["溪湖鎮","田中鎮","北斗鎮","二林鎮","大村鄉","線西鄉","花壇鄉","伸港鄉","埔心鄉","埔鹽鄉","埤頭鄉","永靖鄉","溪州鄉","田尾鄉","福興鄉","竹塘鄉","芳苑鄉","社頭鄉"];
+const otherNt = ["竹山鎮","名間鄉","水里鄉","集集鎮","魚池鄉","鹿谷鄉","中寮鄉","國姓鄉","信義鄉","仁愛鄉"];
 
 function toggleDrawer() {
     const d = document.getElementById('areaCalculator');
@@ -147,7 +169,8 @@ function runAreaCalc() {
     const pri = ["mMain", "mBal", "mFlower", "mRain", "mPlat", "mOth"].reduce((acc, id) => acc + parseFloat(document.getElementById(id).value || 0), 0);
     const getSub = (m, d, n) => parseFloat(document.getElementById(m).value||0) * (parseFloat(document.getElementById(n).value||0)/parseFloat(document.getElementById(d).value||1));
     const pub = getSub('mS1','dS1','nS1') + getSub('mS2','dS2','nS2') + getSub('mS3','dS3','nS3');
-    const finalPing = (pri + pub) * 0.3025;
+    const car = getSub('mCar','dCar','nCar');
+    const finalPing = (pri + pub - car) * 0.3025;
     document.getElementById('outPri').innerText = pri.toFixed(2);
     document.getElementById('outPub').innerText = pub.toFixed(2);
     document.getElementById('outPing').innerText = finalPing.toFixed(2);
@@ -170,7 +193,10 @@ function initDistricts() {
     const city = document.getElementById('city').value;
     const distSelect = document.getElementById('district');
     distSelect.innerHTML = "";
-    Object.keys(masterData[city]).forEach(d => { let opt = document.createElement('option'); opt.value = d; opt.innerText = d; distSelect.appendChild(opt); });
+    let list = Object.keys(masterData[city]);
+    if (city === "彰化縣") list = list.concat(otherCh);
+    if (city === "南投縣") list = list.concat(otherNt);
+    list.forEach(d => { let opt = document.createElement('option'); opt.value = d; opt.innerText = d; distSelect.appendChild(opt); });
     calculate();
 }
 
@@ -179,7 +205,8 @@ function calculate() {
     const age = parseFloat(document.getElementById('age').value) || 0, area = parseFloat(document.getElementById('area').value) || 0, rent = parseFloat(document.getElementById('rent').value) || 0;
     const adjL = parseFloat(document.getElementById('adjLoc').value), adjD = parseFloat(document.getElementById('adjDec').value);
 
-    const priceList = masterData[city][dist] ? masterData[city][dist][type] : [400,390,380,370,360,350,340,330,320];
+    // 若為其他鄉鎮市則套用二線區域基準
+    const priceList = masterData[city][dist] ? masterData[city][dist][type] : (type === "整層" ? [400,390,385,375,365,355,345,330,315] : [385,380,375,365,355,345,335,320,305]);
     const basePrice = priceList[Math.min(8, Math.floor(age / 5))];
     const adjustedPrice = basePrice * (1 + adjL + adjD);
     
@@ -192,12 +219,11 @@ function calculate() {
 
     const box = document.getElementById('statusBox');
     if (rent === 0 || area === 0) { box.innerText = "待計算"; box.className = "status-init"; }
-    else if (rent > maxVal) { box.innerText = "不符合 (超出上限)"; box.className = "status-danger"; }
+    else if (rent > maxVal) { box.innerText = "不符合 (超額)"; box.className = "status-danger"; }
     else { box.innerText = "符合標準"; box.className = "status-normal"; }
 }
 
 function toggleView() { document.body.classList.toggle('mobile-mode'); }
-
 initDistricts(); runAreaCalc();
 </script>
 </body>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>租金評定系統 鎮信/安東 v17.0</title>
+    <title>租金評定系統 鎮信/安東 v17.1</title>
     <style>
         :root { --primary: #2c3e50; --bg: #f8fafc; --accent: #3498db; --danger: #e74c3c; --success: #27ae60; }
         * { box-sizing: border-box; }
@@ -40,7 +40,7 @@
 <body>
 
 <div class="container">
-    <div class="header"><h2>租金評定系統 鎮信/安東 v17.0</h2></div>
+    <div class="header"><h2>租金評定系統 鎮信/安東 v17.1</h2></div>
     <div class="main-grid">
         <div class="input-side">
             <button class="drawer-btn" onclick="toggleDrawer()">
@@ -115,7 +115,6 @@
 </div>
 
 <script>
-// 數據與鄉鎮邏輯完全保留
 const masterData = {
     "桃園市": {
         "桃園區": { "整層": [780,770,755,735,720,700,680,650,620], "套房": [1120,1100,1080,1055,1025,1000,970,930,885] },
@@ -138,45 +137,19 @@ const masterData = {
     "和美鎮": { "整層":[555,545,535,520,510,495,480,460,440], "套房":[565,555,550,535,520,505,490,470,450] },
     "鹿港鎮": { "整層":[505,500,490,475,465,450,440,420,400], "套房":[565,555,550,535,520,505,490,470,450] },
     "秀水鄉": { "整層":[480,475,465,455,445,430,420,400,380], "套房":[565,555,550,535,520,505,490,470,450] },
-    "社頭鄉": { "整層":[470,465,455,445,430,420,410,390,375], "套房":[480,475,465,455,445,430,420,400,380] },
-
-    "二林鎮": { "整層":[445,440,430,420,410,400,385,370,355], "套房":[460,450,445,430,420,410,400,380,365] },
-    "大村鄉": { "整層":[445,440,430,420,410,400,385,370,355], "套房":[460,450,445,430,420,410,400,380,365] },
-    "線西鄉": { "整層":[445,440,430,420,410,400,385,370,355], "套房":[460,450,445,430,420,410,400,380,365] },
-    "花壇鄉": { "整層":[445,440,430,420,410,400,385,370,355], "套房":[460,450,445,430,420,410,400,380,365] },
-
-    "伸港鄉": { "整層":[435,425,420,410,400,390,375,360,345], "套房":[445,440,430,420,410,400,385,370,355] },
-    "北斗鎮": { "整層":[435,425,420,410,400,390,375,360,345], "套房":[445,440,430,420,410,400,385,370,355] },
-
-    "埔心鄉": { "整層":[400,390,385,375,365,355,345,330,315], "套房":[410,405,395,385,375,365,355,340,325] },
-    "埔鹽鄉": { "整層":[400,390,385,375,365,355,345,330,315], "套房":[410,405,395,385,375,365,355,340,325] },
-    "埤頭鄉": { "整層":[400,390,385,375,365,355,345,330,315], "套房":[410,405,395,385,375,365,355,340,325] },
-    "永靖鄉": { "整層":[400,390,385,375,365,355,345,330,315], "套房":[410,405,395,385,375,365,355,340,325] },
-    "溪州鄉": { "整層":[400,390,385,375,365,355,345,330,315], "套房":[410,405,395,385,375,365,355,340,325] },
-    "溪湖鎮": { "整層":[400,390,385,375,365,355,345,330,315], "套房":[480,475,465,455,445,430,420,400,380] },
-    "田中鎮": { "整層":[400,390,385,375,365,355,345,330,315], "套房":[480,475,465,455,445,430,420,400,380] },
-    "田尾鄉": { "整層":[400,390,385,375,365,355,345,330,315], "套房":[410,405,395,385,375,365,355,340,325] },
-    "福興鄉": { "整層":[400,390,385,375,365,355,345,330,315], "套房":[410,405,395,385,375,365,355,340,325] },
-    "竹塘鄉": { "整層":[400,390,385,375,365,355,345,330,315], "套房":[410,405,395,385,375,365,355,340,325] },
-    "芳苑鄉": { "整層":[400,390,385,375,365,355,345,330,315], "套房":[410,405,395,385,375,365,355,340,325] }
+    "社頭鄉": { "整層":[470,465,455,445,430,420,410,390,375], "套房":[480,475,465,455,445,430,420,400,380] }
 },
 "南投縣": {
     "草屯鎮": { "整層":[625,615,605,590,575,560,545,520,495], "套房":[660,650,640,625,605,590,575,550,525] },
     "南投市": { "整層":[600,590,580,565,550,535,520,500,475], "套房":[660,650,640,625,605,590,575,550,525] },
     "埔里鎮": { "整層":[580,570,560,545,530,515,500,480,460], "套房":[600,590,580,565,550,535,520,500,475] },
     "竹山鎮": { "整層":[435,425,420,410,400,390,375,360,345], "套房":[480,475,465,455,445,430,420,400,380] },
-    "名間鄉": { "整層":[410,405,395,385,375,365,355,340,325], "套房":[420,415,410,400,390,375,365,350,335] },
-
-    "水里鄉": { "整層":[400,390,385,375,365,355,345,330,315], "套房":[420,415,410,400,390,375,365,350,335] },
-    "集集鎮": { "整層":[400,390,385,375,365,355,345,330,315], "套房":[420,415,410,400,390,375,365,350,335] },
-    "魚池鄉": { "整層":[400,390,385,375,365,355,345,330,315], "套房":[420,415,410,400,390,375,365,350,335] },
-    "鹿谷鄉": { "整層":[400,390,385,375,365,355,345,330,315], "套房":[420,415,410,400,390,375,365,350,335] },
-
-    "中寮鄉": { "整層":[375,370,360,355,345,335,325,310,295], "套房":[385,380,375,365,355,345,335,320,305] },
-    "國姓鄉": { "整層":[375,370,360,355,345,335,325,310,295], "套房":[385,380,375,365,355,345,335,320,305] },
-    "信義鄉": { "整層":[375,370,360,355,345,335,325,310,295], "套房":[385,380,375,365,355,345,335,320,305] },
-    "仁愛鄉": { "整層":[375,370,360,355,345,335,325,310,295], "套房":[385,380,375,365,355,345,335,320,305] }
+    "名間鄉": { "整層":[410,405,395,385,375,365,355,340,325], "套房":[420,415,410,400,390,375,365,350,335] }
+}
 };
+
+const otherCh = ["溪湖鎮","田中鎮","北斗鎮","二林鎮","鹿港鎮","秀水鄉","大村鄉","線西鄉","花壇鄉","伸港鄉","埔心鄉","埔鹽鄉","埤頭鄉","永靖鄉","溪州鄉","田尾鄉","福興鄉","竹塘鄉","芳苑鄉","社頭鄉"];
+const otherNt = ["草屯鎮","埔里鎮","竹山鎮","名間鄉","水里鄉","集集鎮","魚池鄉","鹿谷鄉","中寮鄉","國姓鄉","信義鄉","仁愛鄉"];
 
 function toggleDrawer() {
     const d = document.getElementById('areaCalculator');
@@ -185,16 +158,10 @@ function toggleDrawer() {
 }
 
 function runAreaCalc() {
-    // 1. 專有面積 (主建物 + 陽台 + 花台 + 雨遮 + 平台 + 其他)
     const pri = ["mMain", "mBal", "mFlower", "mRain", "mPlat", "mOth"].reduce((acc, id) => acc + parseFloat(document.getElementById(id).value || 0), 0);
-    
-    // 2. 共有部分持分
     const getSub = (m, d, n) => parseFloat(document.getElementById(m).value||0) * (parseFloat(document.getElementById(n).value||0)/parseFloat(document.getElementById(d).value||1));
     const pub = getSub('mS1','dS1','nS1') + getSub('mS2','dS2','nS2') + getSub('mS3','dS3','nS3');
-    
-    // 3. 車位扣除
     const car = getSub('mCar','dCar','nCar');
-    
     const finalPing = (pri + pub - car) * 0.3025;
     
     document.getElementById('outPri').innerText = pri.toFixed(2);
@@ -210,8 +177,12 @@ function applyArea() {
 function calcAgeByDate() {
     const s = document.getElementById('buildDate').value;
     if (s.length >= 7) {
-        document.getElementById('age').value = Math.max(0, (new Date().getFullYear() - 1911) - parseInt(s.substring(0,3)));
-        calculate();
+        const buildYear = parseInt(s.substring(0, 3));
+        if (!isNaN(buildYear)) {
+            const currentYear = new Date().getFullYear() - 1911;
+            document.getElementById('age').value = Math.max(0, currentYear - buildYear);
+            calculate();
+        }
     }
 }
 
@@ -219,36 +190,69 @@ function initDistricts() {
     const city = document.getElementById('city').value;
     const distSelect = document.getElementById('district');
     distSelect.innerHTML = "";
-    let list = Object.keys(masterData[city]);
-    if (city === "彰化縣") list = list.concat(otherCh);
-    if (city === "南投縣") list = list.concat(otherNt);
-    list.forEach(d => { let opt = document.createElement('option'); opt.value = d; opt.innerText = d; distSelect.appendChild(opt); });
+    
+    // 使用 Set 解決重複行政區問題
+    let distSet = new Set(Object.keys(masterData[city] || {}));
+    if (city === "彰化縣") otherCh.forEach(d => distSet.add(d));
+    if (city === "南投縣") otherNt.forEach(d => distSet.add(d));
+    
+    distSet.forEach(d => { 
+        let opt = document.createElement('option'); 
+        opt.value = d; 
+        opt.innerText = d; 
+        distSelect.appendChild(opt); 
+    });
     calculate();
 }
 
 function calculate() {
-    const city = document.getElementById('city').value, dist = document.getElementById('district').value, type = document.getElementById('caseType').value;
-    const age = parseFloat(document.getElementById('age').value) || 0, area = parseFloat(document.getElementById('area').value) || 0, rent = parseFloat(document.getElementById('rent').value) || 0;
-    const adjL = parseFloat(document.getElementById('adjLoc').value), adjD = parseFloat(document.getElementById('adjDec').value);
+    const city = document.getElementById('city').value;
+    const dist = document.getElementById('district').value;
+    const type = document.getElementById('caseType').value;
+    const age = parseFloat(document.getElementById('age').value) || 0;
+    const area = parseFloat(document.getElementById('area').value) || 0;
+    const rent = parseFloat(document.getElementById('rent').value) || 0;
+    const adjL = parseFloat(document.getElementById('adjLoc').value);
+    const adjD = parseFloat(document.getElementById('adjDec').value);
 
-    const priceList = masterData[city][dist] ? masterData[city][dist][type] : (type === "整層" ? [400,390,385,375,365,355,345,330,315] : [385,380,375,365,355,345,335,320,305]);
+    // 取得基準單價
+    const priceList = (masterData[city] && masterData[city][dist]) 
+        ? masterData[city][dist][type] 
+        : (type === "整層" ? [400,390,385,375,365,355,345,330,315] : [385,380,375,365,355,345,335,320,305]);
+    
     const basePrice = priceList[Math.min(8, Math.floor(age / 5))];
     const adjustedPrice = basePrice * (1 + adjL + adjD);
     
     document.getElementById('resRef').innerText = basePrice + " 元/坪";
     document.getElementById('resAdj').innerText = Math.round(adjustedPrice) + " 元/坪";
     
+    // 取得縣市上限
     let cap = (city === "桃園市") ? (type === "整層" ? 35000 : 21000) : (type === "整層" ? 22000 : 13000);
-    const maxVal = Math.min(adjustedPrice * area, cap);
+    
+    // 計算上限 (增加防呆防止 NaN)
+    let maxVal = 0;
+    if (!isNaN(adjustedPrice) && !isNaN(area) && area > 0) {
+        maxVal = Math.min(adjustedPrice * area, cap);
+    }
+    
     document.getElementById('resMax').innerText = Math.round(maxVal).toLocaleString() + " 元";
 
     const box = document.getElementById('statusBox');
-    if (rent === 0 || area === 0) { box.innerText = "待輸入關鍵數據"; box.className = "status-init"; }
-    else if (rent > maxVal) { box.innerText = "❌ 評定不通過 (租金超額)"; box.className = "status-danger"; }
-    else { box.innerText = "✅ 評定符合標準"; box.className = "status-normal"; }
+    if (rent === 0 || area === 0) { 
+        box.innerText = "待輸入關鍵數據"; 
+        box.className = "status-init"; 
+    } else if (rent > maxVal) { 
+        box.innerText = "❌ 評定不通過 (租金超額)"; 
+        box.className = "status-danger"; 
+    } else { 
+        box.innerText = "✅ 評定符合標準"; 
+        box.className = "status-normal"; 
+    }
 }
 
-initDistricts(); runAreaCalc();
+// 初始化
+initDistricts(); 
+runAreaCalc();
 </script>
 </body>
 </html>

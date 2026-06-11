@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>租金評定系統 鎮信/安東 v17.2</title>
+    <title>租金評定系統 鎮信/安東 v17.3</title>
     <style>
         :root { --primary: #2c3e50; --bg: #f8fafc; --accent: #3498db; --danger: #e74c3c; --success: #27ae60; }
         * { box-sizing: border-box; }
@@ -40,7 +40,7 @@
 <body>
 
 <div class="container">
-    <div class="header"><h2>租金評定系統 鎮信/安東 v17.1</h2></div>
+    <div class="header"><h2>租金評定系統 鎮信/安東 v17.3</h2></div>
     <div class="main-grid">
         <div class="input-side">
             <button class="drawer-btn" onclick="toggleDrawer()">
@@ -60,6 +60,10 @@
                         <tr><td>公設 1</td><td><input type="number" id="mS1" value="5699.05" oninput="runAreaCalc()"></td><td><input type="number" id="dS1" value="100000" oninput="runAreaCalc()"></td><td><input type="number" id="nS1" value="256" oninput="runAreaCalc()"></td></tr>
                         <tr><td>公設 2</td><td><input type="number" id="mS2" value="260.88" oninput="runAreaCalc()"></td><td><input type="number" id="dS2" value="10000" oninput="runAreaCalc()"></td><td><input type="number" id="nS2" value="425" oninput="runAreaCalc()"></td></tr>
                         <tr><td>公設 3</td><td><input type="number" id="mS3" value="0" oninput="runAreaCalc()"></td><td><input type="number" id="dS3" value="1" oninput="runAreaCalc()"></td><td><input type="number" id="nS3" value="0" oninput="runAreaCalc()"></td></tr>
+                        <tr><td>公設 4</td><td><input type="number" id="mS4" value="0" oninput="runAreaCalc()"></td><td><input type="number" id="dS4" value="1" oninput="runAreaCalc()"></td><td><input type="number" id="nS4" value="0" oninput="runAreaCalc()"></td></tr>
+                        <tr><td>公設 5</td><td><input type="number" id="mS5" value="0" oninput="runAreaCalc()"></td><td><input type="number" id="dS5" value="1" oninput="runAreaCalc()"></td><td><input type="number" id="nS5" value="0" oninput="runAreaCalc()"></td></tr>
+                        <tr><td>公設 6</td><td><input type="number" id="mS6" value="0" oninput="runAreaCalc()"></td><td><input type="number" id="dS6" value="1" oninput="runAreaCalc()"></td><td><input type="number" id="nS6" value="0" oninput="runAreaCalc()"></td></tr>
+                        
                         <tr style="background:#ebf8ff;"><td style="color:blue; font-weight:bold;">車位扣除</td><td><input type="number" id="mCar" value="0" oninput="runAreaCalc()"></td><td><input type="number" id="dCar" value="1" oninput="runAreaCalc()"></td><td><input type="number" id="nCar" value="0" oninput="runAreaCalc()"></td></tr>
                     </tbody>
                 </table>
@@ -94,7 +98,7 @@
             <div class="form-row">
                 <div><label>區位調整率</label>
                     <select id="adjLoc" onchange="calculate()">
-                        <option value="0">中下區位 (0%)</option><option value="0.03">中上區位 (3%)</option><option value="0.05">優質區位 (5%)</option>
+                        <option value="0">中下區位 (0%)</option><option value="0.03">Ref 中上區位 (3%)</option><option value="0.05">優質區位 (5%)</option>
                     </select>
                 </div>
                 <div><label>裝修調整率</label>
@@ -163,21 +167,25 @@ function toggleDrawer() {
 function runAreaCalc() {
     const pri = ["mMain", "mBal", "mFlower", "mRain", "mPlat", "mOth"].reduce((acc, id) => acc + parseFloat(document.getElementById(id).value || 0), 0);
     const getSub = (m, d, n) => parseFloat(document.getElementById(m).value||0) * (parseFloat(document.getElementById(n).value||0)/parseFloat(document.getElementById(d).value||1));
-    const pub = getSub('mS1','dS1','nS1') + getSub('mS2','dS2','nS2') + getSub('mS3','dS3','nS3');
+    
+    // 將公設 4、5、6 的計算加進來
+    const pub = getSub('mS1','dS1','nS1') + 
+                getSub('mS2','dS2','nS2') + 
+                getSub('mS3','dS3','nS3') +
+                getSub('mS4','dS4','nS4') +
+                getSub('mS5','dS5','nS5') +
+                getSub('mS6','dS6','nS6');
+                
     const car = getSub('mCar','dCar','nCar');
     
-    // 計算各項坪數
-    const totalPing = (pri + pub) * 0.3025; // 總坪數 (未扣車位)
-    const carPing = car * 0.3025;          // 車位坪數
+    const totalPing = (pri + pub) * 0.3025;
+    const carPing = car * 0.3025;
     const finalPing = (pri + pub - car) * 0.3025;
     
     document.getElementById('outPri').innerText = pri.toFixed(2);
     document.getElementById('outPub').innerText = pub.toFixed(2);
-    
-    // 將計算完的坪數渲染到新欄位
     document.getElementById('outTotalPing').innerText = totalPing.toFixed(2);
     document.getElementById('outCarPing').innerText = carPing.toFixed(2);
-    
     document.getElementById('outPing').innerText = finalPing.toFixed(2);
 }
 
@@ -203,7 +211,6 @@ function initDistricts() {
     const distSelect = document.getElementById('district');
     distSelect.innerHTML = "";
     
-    // 使用 Set 解決重複行政區問題
     let distSet = new Set(Object.keys(masterData[city] || {}));
     if (city === "彰化縣") otherCh.forEach(d => distSet.add(d));
     if (city === "南投縣") otherNt.forEach(d => distSet.add(d));
@@ -227,7 +234,6 @@ function calculate() {
     const adjL = parseFloat(document.getElementById('adjLoc').value);
     const adjD = parseFloat(document.getElementById('adjDec').value);
 
-    // 取得基準單價
     const priceList = (masterData[city] && masterData[city][dist]) 
         ? masterData[city][dist][type] 
         : (type === "整層" ? [400,390,385,375,365,355,345,330,315] : [385,380,375,365,355,345,335,320,305]);
@@ -238,10 +244,8 @@ function calculate() {
     document.getElementById('resRef').innerText = basePrice + " 元/坪";
     document.getElementById('resAdj').innerText = Math.round(adjustedPrice) + " 元/坪";
     
-    // 取得縣市上限
     let cap = (city === "桃園市") ? (type === "整層" ? 35000 : 21000) : (type === "整層" ? 22000 : 13000);
     
-    // 計算上限 (增加防呆防止 NaN)
     let maxVal = 0;
     if (!isNaN(adjustedPrice) && !isNaN(area) && area > 0) {
         maxVal = Math.min(adjustedPrice * area, cap);
@@ -262,7 +266,6 @@ function calculate() {
     }
 }
 
-// 初始化
 initDistricts(); 
 runAreaCalc();
 </script>

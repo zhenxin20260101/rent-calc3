@@ -66,6 +66,9 @@
                 <div class="summary-box">
                     <div class="summary-item">專有面積(m²) <span id="outPri">0</span></div>
                     <div class="summary-item">公設面積(m²) <span id="outPub">0</span></div>
+                    <div class="summary-item" style="border-top: 1px dashed #feb2b2; padding-top:5px;">總坪數(未扣除車位) <span id="outTotalPing">0</span></div>
+                    <div class="summary-item" style="border-top: 1px dashed #feb2b2; padding-top:5px;">車位坪數 <span id="outCarPing">0</span></div>
+                    
                     <div class="summary-item" style="grid-column: span 2; border-top: 1px solid #feb2b2; padding-top:5px;">
                         扣除車位後總坪數 <span id="outPing" style="font-size:1.5rem;">0</span>
                     </div>
@@ -162,10 +165,19 @@ function runAreaCalc() {
     const getSub = (m, d, n) => parseFloat(document.getElementById(m).value||0) * (parseFloat(document.getElementById(n).value||0)/parseFloat(document.getElementById(d).value||1));
     const pub = getSub('mS1','dS1','nS1') + getSub('mS2','dS2','nS2') + getSub('mS3','dS3','nS3');
     const car = getSub('mCar','dCar','nCar');
+    
+    // 計算各項坪數
+    const totalPing = (pri + pub) * 0.3025; // 總坪數 (未扣車位)
+    const carPing = car * 0.3025;          // 車位坪數
     const finalPing = (pri + pub - car) * 0.3025;
     
     document.getElementById('outPri').innerText = pri.toFixed(2);
     document.getElementById('outPub').innerText = pub.toFixed(2);
+    
+    // 將計算完的坪數渲染到新欄位
+    document.getElementById('outTotalPing').innerText = totalPing.toFixed(2);
+    document.getElementById('outCarPing').innerText = carPing.toFixed(2);
+    
     document.getElementById('outPing').innerText = finalPing.toFixed(2);
 }
 
